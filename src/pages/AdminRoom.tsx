@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 import logoImg from "../assets/images/logo.svg";
 import deleteImg from "../assets/images/delete.svg";
@@ -17,6 +17,7 @@ type RoomParams = {
 
 export function AdminRoom() {
   // const { user } = useAuth();
+  const history = useHistory();
   const params = useParams<RoomParams>();
   const roomId = params.id;
   const { questions, title } = useRoom(roomId);
@@ -27,6 +28,14 @@ export function AdminRoom() {
     }
   }
 
+  async function handleCloseRoom() {
+    await database.ref(`rooms/${roomId}`).update({
+      closedAt: new Date(),
+    });
+
+    history.push("/");
+  }
+
   return (
     <div id="page-room">
       <header>
@@ -34,7 +43,9 @@ export function AdminRoom() {
           <img src={logoImg} alt="Letmeask" />
           <div>
             <RoomCode code={roomId} />
-            <Button isOutlined>Encerrar sala</Button>
+            <Button isOutlined onClick={handleCloseRoom}>
+              Encerrar sala
+            </Button>
           </div>
         </div>
       </header>
